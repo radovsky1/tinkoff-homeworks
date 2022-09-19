@@ -53,19 +53,25 @@ class HitsMatch:
                     self._table[self._cur_hole][i] = self.MAX_ATTEMPTS
             self._next_hole()
 
-    def _get_total_points(self, player_id: int) -> int:
+    def _get_points(self, player_id: int) -> int:
         return sum(self._table[i][player_id] for i in range(self.holes))
 
     def get_winners(self) -> [Player]:
         if not self.finished:
             raise RuntimeError('Match is not finished')
 
-        total_points = [self._get_total_points(i) for i in range(len(self.players))]
+        total_points = [self._get_points(i) for i in range(len(self.players))]
         min_points = min(total_points)
-        return [self.players[i] for i, points in enumerate(total_points) if points == min_points]
+
+        winners = []
+        for i, points in enumerate(total_points):
+            if points == min_points:
+                winners.append(self.players[i])
+        return winners
 
     def get_table(self) -> list:
-        return [tuple(player.name for player in self.players)] + [tuple(t) for t in self._table]
+        names_row = [tuple(player.name for player in self.players)]
+        return names_row + [tuple(t) for t in self._table]
 
 
 class HolesMatch:
@@ -119,16 +125,22 @@ class HolesMatch:
         if self._attempt == self.MAX_ATTEMPTS + 1:
             self._next_hole()
 
-    def _get_total_points(self, player_id: int) -> int:
+    def _get_points(self, player_id: int) -> int:
         return sum(self._table[i][player_id] for i in range(self.holes))
 
     def get_winners(self) -> [Player]:
         if not self.finished:
             raise RuntimeError('Match is not finished')
 
-        total_points = [self._get_total_points(i) for i in range(len(self.players))]
+        total_points = [self._get_points(i) for i in range(len(self.players))]
         max_points = max(total_points)
-        return [self.players[i] for i, points in enumerate(total_points) if points == max_points]
+
+        winners = []
+        for i, points in enumerate(total_points):
+            if points == max_points:
+                winners.append(self.players[i])
+        return winners
 
     def get_table(self) -> list:
-        return [tuple(player.name for player in self.players)] + [tuple(t) for t in self._table]
+        names_row = [tuple(player.name for player in self.players)]
+        return names_row + [tuple(t) for t in self._table]
