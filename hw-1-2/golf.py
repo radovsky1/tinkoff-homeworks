@@ -4,10 +4,10 @@ class Player:
         self.name = name
 
 
-class HitsMatch:
+class Match:
     MAX_ATTEMPTS = 10
 
-    def __init__(self, holes, players: [Player]) -> None:
+    def __init__(self, holes: int, players: [Player]) -> None:
         self.holes = holes
         self.players = players
         self.finished = False
@@ -17,6 +17,28 @@ class HitsMatch:
         self._table = []
         for i in range(holes):
             self._table.append([None for _ in range(len(players))])
+
+    def _next_hole(self):
+        pass
+
+    def hit(self, success=False):
+        pass
+
+    def get_winners(self) -> [Player]:
+        pass
+
+    def get_table(self) -> list:
+        names_row = [tuple(player.name for player in self.players)]
+        return names_row + [tuple(t) for t in self._table]
+
+    def _get_points(self, player_id: int) -> int:
+        return sum(self._table[i][player_id] for i in range(self.holes))
+
+
+class HitsMatch(Match):
+
+    def __init__(self, holes, players: [Player]) -> None:
+        super().__init__(holes, players)
 
     def _next_hole(self):
         self._cur_hole += 1
@@ -53,9 +75,6 @@ class HitsMatch:
                     self._table[self._cur_hole][i] = self.MAX_ATTEMPTS
             self._next_hole()
 
-    def _get_points(self, player_id: int) -> int:
-        return sum(self._table[i][player_id] for i in range(self.holes))
-
     def get_winners(self) -> [Player]:
         if not self.finished:
             raise RuntimeError('Match is not finished')
@@ -69,24 +88,11 @@ class HitsMatch:
                 winners.append(self.players[i])
         return winners
 
-    def get_table(self) -> list:
-        names_row = [tuple(player.name for player in self.players)]
-        return names_row + [tuple(t) for t in self._table]
 
-
-class HolesMatch:
-    MAX_ATTEMPTS = 10
+class HolesMatch(Match):
 
     def __init__(self, holes: int, players: [Player]) -> None:
-        self.holes = holes
-        self.players = players
-        self.finished = False
-        self._cur_hole = 0
-        self._cur_player = 0
-        self._attempt = 1
-        self._table = []
-        for i in range(holes):
-            self._table.append([None for _ in range(len(players))])
+        super().__init__(holes, players)
 
     def _next_hole(self):
         for i, value in enumerate(self._table[self._cur_hole]):
@@ -125,9 +131,6 @@ class HolesMatch:
         if self._attempt == self.MAX_ATTEMPTS + 1:
             self._next_hole()
 
-    def _get_points(self, player_id: int) -> int:
-        return sum(self._table[i][player_id] for i in range(self.holes))
-
     def get_winners(self) -> [Player]:
         if not self.finished:
             raise RuntimeError('Match is not finished')
@@ -140,7 +143,3 @@ class HolesMatch:
             if points == max_points:
                 winners.append(self.players[i])
         return winners
-
-    def get_table(self) -> list:
-        names_row = [tuple(player.name for player in self.players)]
-        return names_row + [tuple(t) for t in self._table]
