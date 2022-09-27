@@ -1,0 +1,11 @@
+{
+  "params": {
+    "ignore_files": true,
+    "ignore_www": true,
+    "ignore_urls": [
+      "sys.mail.ru/calendar/meeting/254/40265/",
+      "www.sys.mail.ru/calendar/config/254/40261/"
+    ]
+  },
+  "response": [4, 3, 3, 3, 3]
+}
