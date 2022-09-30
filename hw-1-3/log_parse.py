@@ -21,6 +21,30 @@ def is_date_valid(date: datetime,
     return True
 
 
+def parse_date(block: str):
+    try:
+        date = block.split('[')[1].split(']')[0]
+    except IndexError as e:
+        print('Error while parsing: ', e)
+        return None
+    else:
+        date = datetime.strptime(date, '%d/%b/%Y %H:%M:%S')
+
+    return date
+
+
+def parse_request(block: str):
+    try:
+        request_type = block.split(' ')[0]
+        request = block.split(' ')[1].split('?')[0].split("//")[1]
+        protocol = block.split(' ')[2]
+    except IndexError as e:
+        print('Error while parsing: ', e)
+        return None
+    else:
+        return request, request_type, protocol
+
+
 def parse(
         log_file: str = "log.log",
         ignore_files: bool = False,
@@ -34,8 +58,8 @@ def parse(
     if ignore_urls is None:
         ignore_urls = []
 
-    file = open(log_file, "r")
-    lines = file.readlines()
+    with open(log_file, 'r') as file:
+        lines = file.readlines()
 
     response_time: dict[str, int] = {}
     frequency: dict[str, int] = {}
@@ -49,25 +73,12 @@ def parse(
             continue
 
         # date
-        try:
-            date = blocks[0].split('[')[1].split(']')[0]
-        except IndexError as e:
-            print('Error while parsing: ', e)
-            continue
-        else:
-            date = datetime.strptime(date, '%d/%b/%Y %H:%M:%S')
-
+        date = parse_date(blocks[0])
         if not is_date_valid(date, start_at, stop_at):
             continue
 
         # request
-        try:
-            rtype = blocks[1].split(' ')[0]
-            request = blocks[1].split(' ')[1].split('?')[0].split("//")[1]
-            protocol = blocks[1].split(' ')[2]
-        except IndexError as e:
-            print('Error while parsing: ', e)
-            continue
+        request, rtype, protocol = parse_request(blocks[1])
 
         if request_type and rtype != request_type:
             continue
