@@ -42,7 +42,7 @@ class Blockchain(BlockchainInterface):
         return self.chain[-1]
 
     def make_hash(self, block):
-        encoded_block = json.dumps(block, sort_keys=True).encode()
+        encoded_block = json.dumps(block.toDict(), sort_keys=True).encode()
         return hashlib.sha256(encoded_block).hexdigest()
 
     def proof_of_work(self, previous_proof):
@@ -68,11 +68,11 @@ class Blockchain(BlockchainInterface):
 
         while block_index < len(self.chain):
             block = self.chain[block_index]
-            if block["prev_hash"] != self.make_hash(previous_block):
+            if block.previous_hash != self.make_hash(previous_block):
                 return False
 
-            previous_proof = previous_block["proof"]
-            proof = block["proof"]
+            previous_proof = previous_block.proof
+            proof = block.proof
             hash_operation = get_sha256(proof, previous_proof)
 
             if not self.is_hash_complex_valid(hash_operation):
