@@ -1,0 +1,12 @@
+{
+  "params": {
+    "ignore_files": true,
+    "ignore_www": true,
+    "ignore_urls": [
+      "sys.mail.ru/calendar/meeting/254/40265/",
+      "www.sys.mail.ru/calendar/config/254/40261/"
+    ],
+    "slow_queries": true
+  },
+  "response": [53544, 27412, 25782, 20431, 18757]
+}
