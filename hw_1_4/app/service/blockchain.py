@@ -1,7 +1,9 @@
 import datetime
 import hashlib
 import json
+import multiprocessing
 
+from functools import partial
 from .block import Block, BlockStatus
 from .service import BlockchainInterface
 
@@ -11,7 +13,9 @@ def math_func(proof: int, previous_proof: int) -> int:
 
 
 def get_sha256(proof, previous_proof):
-    return hashlib.sha256(str(math_func(proof, previous_proof)).encode()).hexdigest()
+    return hashlib.sha256(
+        str(math_func(proof, previous_proof)).encode()
+    ).hexdigest()
 
 
 class Blockchain(BlockchainInterface):
@@ -24,6 +28,7 @@ class Blockchain(BlockchainInterface):
 
     def __init__(self, calc_complex="00000"):
         self.chain: [Block] = []
+        self._mining_blocks: [int] = []
         self.create_block(1, "0")
         self.complex = calc_complex
 
@@ -38,6 +43,21 @@ class Blockchain(BlockchainInterface):
 
         return block
 
+    def mine_block(self):
+        block_index = self.get_next_block_index()
+        self._mining_blocks.append(block_index)
+
+        previous_block = self.get_previous_block()
+        previous_proof = previous_block.proof
+
+        proof = self.proof_of_work(previous_proof)
+        previous_hash = self.make_hash(previous_block)
+
+        block = self.create_block(proof, previous_hash)
+        self._mining_blocks.remove(block_index)
+
+        return block
+
     def get_previous_block(self):
         return self.chain[-1]
 
@@ -45,8 +65,7 @@ class Blockchain(BlockchainInterface):
         encoded_block = json.dumps(block.toDict(), sort_keys=True).encode()
         return hashlib.sha256(encoded_block).hexdigest()
 
-    def proof_of_work(self, previous_proof):
-        new_proof = 1
+    def _proof_of_work(self, previous_proof, new_proof=1):
         check_proof = False
 
         while check_proof is False:
@@ -58,6 +77,16 @@ class Blockchain(BlockchainInterface):
                 new_proof += 1
 
         return new_proof
+
+    def proof_of_work(self, previous_proof):
+        step = 10 ** len(self.complex)
+        workers = multiprocessing.cpu_count()
+        with multiprocessing.Pool(processes=workers) as pool:
+            result = pool.imap_unordered(partial(
+                self._proof_of_work, previous_proof
+            ), list(range(1, 10 * step, step)))
+
+            return next(result)
 
     def is_hash_complex_valid(self, hash_operation):
         return hash_operation[:len(self.complex)] == self.complex
@@ -87,9 +116,12 @@ class Blockchain(BlockchainInterface):
         return self.chain
 
     def get_block_status(self, block_id):
-        if block_id > len(self.chain):
-            return BlockStatus.NOT_FOUND
-        elif block_id < len(self.chain):
+        if block_id in [block.index for block in self.chain]:
             return BlockStatus.COMPLETED
-        else:
+        elif block_id in self._mining_blocks:
             return BlockStatus.IN_PROGRESS
+        else:
+            return BlockStatus.NOT_FOUND
+
+    def get_next_block_index(self):
+        return len(self.chain) + len(self._mining_blocks) + 1

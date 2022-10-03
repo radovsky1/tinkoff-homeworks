@@ -33,3 +33,11 @@ class BlockchainInterface(metaclass=abc.ABCMeta):
     @abc.abstractmethod
     def proof_of_work(self, previous_proof):
         pass
+
+    @abc.abstractmethod
+    def mine_block(self):
+        pass
+
+    @abc.abstractmethod
+    def get_next_block_index(self):
+        pass
