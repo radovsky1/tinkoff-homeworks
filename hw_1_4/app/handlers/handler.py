@@ -1,6 +1,18 @@
+import threading
+
 from flask import Flask, jsonify, request
 
 from ..service import BlockchainInterface
+
+
+class APIConstants(object):
+    """
+    Blockchain API endpoints
+    """
+    MINE_BLOCK_ENDPOINT = "/mine_block"
+    GET_CHAIN_ENDPOINT = "/get_chain"
+    VALID_ENDPOINT = "/valid"
+    GET_BLOCK_STATUS_ENDPOINT = "/get_block_status/<int:block_id>"
 
 
 class Handler:
@@ -9,26 +21,28 @@ class Handler:
         self.service = service
 
     def init_routes(self, app: Flask):
-        app.route("/mine_block", methods=["GET"])(self.mine_block)
-        app.route("/valid", methods=["GET"])(self.valid)
-        app.route("/get_chain", methods=["GET"])(self.get_chain)
-        app.route("/block/<int:block_id>/status", methods=["GET"])(self.get_block_status)
+        app.route(APIConstants.MINE_BLOCK_ENDPOINT, methods=["GET"])(
+            self.mine_block
+        )
+        app.route(APIConstants.VALID_ENDPOINT, methods=["GET"])(
+            self.valid
+        )
+        app.route(APIConstants.GET_CHAIN_ENDPOINT, methods=["GET"])(
+            self.get_chain
+        )
+        app.route(APIConstants.GET_BLOCK_STATUS_ENDPOINT, methods=["GET"])(
+            self.get_block_status
+        )
 
     def mine_block(self):
-        previous_block = self.service.get_previous_block()
-        previous_proof = previous_block.proof
+        new_block_id = self.service.get_next_block_index()
 
-        proof = self.service.proof_of_work(previous_proof)
-        previous_hash = self.service.make_hash(previous_block)
-
-        block = self.service.create_block(proof, previous_hash)
+        t = threading.Thread(target=self.service.mine_block)
+        t.start()
 
         response = {
-            "message": "Block created",
-            "index": block.index,
-            "timestamp": block.timestamp,
-            "proof": block.proof,
-            "previous_hash": block.previous_hash,
+            "message": "Mining in progress",
+            "block_index": new_block_id,
         }
 
         return jsonify(response), 200
