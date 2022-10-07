@@ -45,6 +45,10 @@ class Blockchain(BlockchainInterface):
 
     def mine_block(self):
         block_index = self.get_next_block_index()
+
+        if block_index in self._mining_blocks:
+            return
+
         self._mining_blocks.append(block_index)
 
         previous_block = self.get_previous_block()
@@ -79,7 +83,7 @@ class Blockchain(BlockchainInterface):
         return new_proof
 
     def proof_of_work(self, previous_proof):
-        step = 10 ** len(self.complex)
+        step = 5 * 10**len(self.complex)
         workers = multiprocessing.cpu_count()
         with multiprocessing.Pool(processes=workers) as pool:
             result = pool.imap_unordered(partial(
@@ -124,4 +128,4 @@ class Blockchain(BlockchainInterface):
             return BlockStatus.NOT_FOUND
 
     def get_next_block_index(self):
-        return len(self.chain) + len(self._mining_blocks) + 1
+        return len(self.chain) + 1
