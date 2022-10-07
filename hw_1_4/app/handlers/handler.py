@@ -12,7 +12,7 @@ class APIConstants(object):
     MINE_BLOCK_ENDPOINT = "/mine_block"
     GET_CHAIN_ENDPOINT = "/get_chain"
     VALID_ENDPOINT = "/valid"
-    GET_BLOCK_STATUS_ENDPOINT = "/get_block_status/<int:block_id>"
+    GET_BLOCK_STATUS_ENDPOINT = "/block/<int:block_id>/status"
 
 
 class Handler:
