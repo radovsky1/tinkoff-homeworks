@@ -13,7 +13,7 @@ class TVMazeConstants(object):
     TIMEOUT = 10  # seconds
 
 
-def get_response(query: str) -> dict[str, str]:
+def get_response(query: str) -> dict:
     response = requests.Response()
     try:
         response = requests.get(
@@ -33,7 +33,7 @@ def get_response(query: str) -> dict[str, str]:
         return response.json()
 
 
-def cache(ttl: int):
+def cache(ttl: int) -> Callable:
     """Decorator that caches the results of the function call.
 
     :param ttl:
