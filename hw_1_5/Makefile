@@ -7,7 +7,7 @@ test: # Runs pytest
 .PHONY: lint
 lint: # Lint code
 	flake8 --exclude test.py .
-	mypy .
+	mypy --exclude tests .
 	black --line-length 79 --skip-string-normalization --check .
 
 .PHONY: check
