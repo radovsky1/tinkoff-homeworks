@@ -10,6 +10,7 @@ from typing import Optional
 class TaskQueueServerConstants(object):
     BACKLOG = 10
     BUFFER_SIZE = 1000000
+    DB_FILE = "tasks"
 
 
 class TaskQueueServerCommands(Enum):
@@ -55,11 +56,15 @@ class TaskQueueServer:
     def __init__(self, ip: str, port: int, path: str, timeout: int):
         self.ip = ip
         self.port = port
-        self.path = path
+        self._path = path
         self.timeout = timeout
         self._connection: Optional[socket.socket] = None
         self._queues: dict[str, list[Task]] = {}
-        # self._load()
+        self._load()
+
+    @property
+    def path(self) -> str:
+        return self._path + TaskQueueServerConstants.DB_FILE
 
     def _make_connection(self):
         self._connection = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -70,9 +75,14 @@ class TaskQueueServer:
     def _close_connection(self):
         self._connection.close()
 
+    def _check_timeout(self, task: Task) -> bool:
+        if task.get_at == 0.0:
+            return False
+        return datetime.now().timestamp() - task.get_at < self.timeout
+
     def _get_task_from_queue(self, name: str) -> Optional[Task]:
         for task in self._queues[name]:
-            if task.get_at == 0.0:
+            if not self._check_timeout(task):
                 return task
         return None
 
