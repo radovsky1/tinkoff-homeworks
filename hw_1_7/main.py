@@ -1,8 +1,8 @@
 import os
 from dotenv import load_dotenv
 
-from tgbot import TgBot, MessageHandler
-from tvmaze import search
+from hw_1_7.tgbot import TgBot, MessageHandler
+from hw_1_7.tvmaze import search
 
 
 def _fetch_program_info(program_name):

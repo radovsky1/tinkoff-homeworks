@@ -2,7 +2,7 @@ import requests
 import json
 
 from .model import TVProgram
-from .filedict import FileDict
+from hw_1_7.filedict import FileDict
 from functools import wraps
 from datetime import datetime
 from typing import Callable, Optional
