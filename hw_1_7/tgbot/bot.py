@@ -34,9 +34,10 @@ class TgBot:
         self._constants = TgBotConstants(token)
         self._logger = logging.getLogger(__name__)
         self._handlers: List[Handler] = []
+        self._is_running = True
 
     def _fetch(
-        self, url: str, params: dict = None
+            self, url: str, params: dict = None
     ) -> Optional[requests.Response]:
         try:
             response = requests.get(url, params=params)
@@ -99,9 +100,12 @@ class TgBot:
             except ValueError as e:
                 self._logger.error("Handler failed: {}".format(e))
 
+    def stop(self) -> None:
+        self._is_running = False
+
     def run(self) -> None:
         last_update_id = 0
-        while True:
+        while self._is_running:
             updates = self._get_updates(last_update_id)
             if updates and "result" in updates:
                 for update in updates["result"]:
