@@ -85,7 +85,6 @@ class TgBot:
 
         if parse_mode == "HTML":
             text = self._validate(text)
-            print(text)
 
         url = url.format(text, chat_id)
         self._fetch(url)
