@@ -37,7 +37,7 @@ class TgBot:
         self._is_running = True
 
     def _fetch(
-            self, url: str, params: dict = None
+        self, url: str, params: dict = None
     ) -> Optional[requests.Response]:
         try:
             response = requests.get(url, params=params)
