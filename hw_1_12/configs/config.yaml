@@ -1,0 +1,33 @@
+nodes:
+  - name: A
+    hostname: localhost
+    port: 8000
+    directory: tmp/a/
+    neighbors:
+      - hostname: localhost
+        port: 8001
+      - hostname: localhost
+        port: 8002
+    save_files: true
+
+  - name: B
+    hostname: localhost
+    port: 8001
+    directory: tmp/b/
+    neighbors:
+      - hostname: localhost
+        port: 8000
+      - hostname: localhost
+        port: 8002
+    save_files: true
+
+  - name: C
+    hostname: localhost
+    port: 8002
+    directory: tmp/c/
+    neighbors:
+      - hostname: localhost
+        port: 8000
+      - hostname: localhost
+        port: 8001
+    save_files: true
