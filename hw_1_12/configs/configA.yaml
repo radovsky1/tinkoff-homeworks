@@ -1,0 +1,11 @@
+node:
+    name: A
+    hostname: localhost
+    port: 8000
+    directory: tmp/a/
+    neighbors:
+      - hostname: localhost
+        port: 8001
+      - hostname: localhost
+        port: 8002
+    save_files: true
