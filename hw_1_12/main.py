@@ -1,4 +1,5 @@
 import asyncio
+import sys
 from typing import List
 
 import yaml
@@ -11,8 +12,8 @@ from hw_1_12.service import Service
 from hw_1_12.service.webapi import DistributedFileStorage
 
 
-def init_config(node_name: str):
-    with open("configs/config{}.yaml".format(node_name), "r") as f:
+def init_config():
+    with open("configs/{}".format(config_name), "r") as f:
         cfg = yaml.load(f, Loader=yaml.FullLoader)
     return cfg
 
@@ -37,7 +38,8 @@ def run_node(
 
 
 if __name__ == "__main__":
-    config = init_config("A")
+    config_name = sys.argv[1]
+    config = init_config()
 
     loop = asyncio.get_event_loop()
 
