@@ -1,0 +1,52 @@
+{% extends "index.html" %}
+{% block content %}
+<div class="content-section absolute top-14 left-3 h-160 w-160">
+    <div class="btn-group btn-group-toggle" data-toggle="buttons">
+        <label class="btn btn-secondary active">
+            <a href="?ordering=-rating"><input type="radio" name="options" id="option1" autocomplete="off" checked> By
+                rating</a>
+        </label>
+        <label class="btn btn-secondary active">
+            <a href="?ordering=-created-at"><input type="radio" name="options" id="option2" autocomplete="off" checked>
+                By date</a>
+        </label>
+    </div>
+</div>
+
+
+<br>
+
+
+<br>
+{% for post in posts %}
+<div class="card">
+    <div class="card-header">
+        {{ post }}
+    </div>
+    <div class="card-body">
+        <h5 class="card-title">{{ post.created_at }}</h5>
+
+        <br>
+
+        <p class="card-text">
+        <ul>
+            <li>{{post.content}}</li>
+        </ul>
+        </p>
+    </div>
+    <div class="card-footer text-muted">
+        <p class="card-text">
+        <ul>
+            <li>Rating: {{post.rating}}</li>
+        </ul>
+
+        <br>
+
+        <a class="btn btn-outline-primary" href="{% url 'post_detail' post.id %}" role="button">View</a>
+    </div>
+</div>
+
+
+<br/><br/>
+{% endfor %}
+{% endblock content %}

@@ -1,0 +1,23 @@
+{% extends 'index.html' %}
+
+{% block content %}
+
+{% if submitted %}
+		Your post has been submitted!
+
+	{% else %}
+
+		<form action="" method=POST>
+			{% csrf_token %}
+
+			{{ form.as_p }}
+
+			<input class="btn btn-primary" type="submit" value="Submit">
+
+		</form>
+		{% endif %}
+
+<br/><br/>
+
+
+{% endblock %}
